@@ -1,0 +1,23 @@
+# Maintainer: Stepan Manookian <jclstefan at yahoo dot de>
+pkgname=calinator-bin
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="A modern terminal calendar with two-way sync"
+arch=('x86_64')
+url="https://github.com/smanookian/calinator"
+license=('MIT')
+depends=('gcc-libs' 'glibc')
+optdepends=('gnome-keyring: store account passwords and sign-ins (or any Secret Service keyring)'
+            'mako: reminder notifications (or any notification daemon)')
+provides=('calinator')
+conflicts=('calinator')
+install=calinator.install
+source_x86_64=("calinator-$pkgver-x86_64-linux.tar.gz::$url/releases/download/v$pkgver/calinator-x86_64-linux.tar.gz")
+sha256sums_x86_64=('SKIP')
+
+package() {
+  install -Dm755 calinator "$pkgdir/usr/bin/calinator"
+  install -Dm644 calinator.desktop "$pkgdir/usr/share/applications/calinator.desktop"
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+  install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
+}

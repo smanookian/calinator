@@ -1,0 +1,37 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Test
+        run: cargo test --workspace
+      - name: Build
+        # The Google client id comes from repository secrets.
+        env:
+          CALINATOR_GOOGLE_CLIENT_ID: ${{ secrets.CALINATOR_GOOGLE_CLIENT_ID }}
+          CALINATOR_GOOGLE_CLIENT_SECRET: ${{ secrets.CALINATOR_GOOGLE_CLIENT_SECRET }}
+        run: cargo build --release --locked -p calinator
+      - name: Package
+        run: |
+          mkdir dist
+          cp target/release/calinator packaging/calinator.desktop LICENSE README.md dist/
+          tar -czf calinator-x86_64-linux.tar.gz -C dist .
+          sha256sum calinator-x86_64-linux.tar.gz > calinator-x86_64-linux.tar.gz.sha256
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" calinator-x86_64-linux.tar.gz calinator-x86_64-linux.tar.gz.sha256 \
+            --title "Calinator $GITHUB_REF_NAME" --notes "See README for install and keys." || \
+          gh release upload "$GITHUB_REF_NAME" calinator-x86_64-linux.tar.gz calinator-x86_64-linux.tar.gz.sha256 --clobber

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Calinator
+GenericName=Calendar
+Comment=A modern terminal calendar with sync
+Exec=calinator %u
+Icon=x-office-calendar
+Terminal=true
+Categories=Office;Calendar;ConsoleOnly;
+Keywords=calendar;events;caldav;google;icloud;reminders;
+MimeType=text/calendar;x-scheme-handler/webcal;x-scheme-handler/webcals;

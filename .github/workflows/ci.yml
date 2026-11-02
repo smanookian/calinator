@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+      - name: Format
+        run: cargo fmt --all --check
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: Tests (repeating events, time zones and DST, quick add, keys, contrast for every theme)
+        run: cargo test --workspace
+      - name: Tests in other time zones
+        run: |
+          TZ=Pacific/Kiritimati cargo test --workspace
+          TZ=America/New_York cargo test --workspace

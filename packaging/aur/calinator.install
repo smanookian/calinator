@@ -1,0 +1,9 @@
+post_install() {
+  echo "Run: calinator   (check your setup with: calinator doctor)"
+  echo "Reminders with the app closed: calinator daemon --install"
+}
+
+post_upgrade() {
+  # A running reminder service keeps the old program until restarted.
+  echo "If you use reminders: systemctl --user restart calinator"
+}
