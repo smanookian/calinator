@@ -31,12 +31,14 @@ pub struct Form {
     inputs: Vec<Input>,
     sel: usize,
     err: Option<String>,
+    /// Signing in again to this account.
+    again: Option<Account>,
 }
 
 impl Form {
     fn new(kind: Kind) -> Self {
         let n = if kind == Kind::CalDav { 3 } else { 2 };
-        Form { kind, inputs: vec![Input::default(); n], sel: 0, err: None }
+        Form { kind, inputs: vec![Input::default(); n], sel: 0, err: None, again: None }
     }
 
     fn labels(&self) -> &'static [&'static str] {
@@ -98,6 +100,7 @@ pub enum Page {
         cancel: Arc<AtomicBool>,
         rx: Receiver<Result<Account, String>>,
         err: Option<String>,
+        again: Option<Account>,
     },
 }
 
@@ -117,15 +120,19 @@ impl AccountsUi {
     }
 }
 
-/// Connects, lists calendars and saves the password in the keyring. Runs on a thread.
-fn check(kind: Kind, url: String, user: String, password: String, name: String) -> Result<Account, String> {
+/// Connects, lists calendars and saves the password in the keyring. Runs on a
+/// thread. `again`: an existing account getting a new password.
+fn check(kind: Kind, url: String, user: String, password: String, name: String, again: Option<Account>) -> Result<Account, String> {
     let mut p = CalDav::new(&url, &user, &password).map_err(|e| e.to_string())?;
     let cals = p.calendars().map_err(|e| e.to_string())?;
     if cals.is_empty() {
         return Err("Signed in, but found no calendars there".into());
     }
     let addresses = p.my_addresses().unwrap_or_default();
-    let account = Account { id: new_id(), kind, name, url, username: user, addresses, ..Default::default() };
+    let account = match again {
+        Some(a) => Account { error: None, addresses, ..a },
+        None => Account { id: new_id(), kind, name, url, username: user, addresses, ..Default::default() },
+    };
     accounts::set_secret(&account.id, &password)?;
     Ok(account)
 }
@@ -157,6 +164,7 @@ pub fn key(app: &mut App, mut ui: AccountsUi, k: KeyEvent) -> Option<Dialog> {
             }
             match k.code {
                 KeyCode::Char('a') | KeyCode::Enter if n == 0 || k.code == KeyCode::Char('a') => Page::Pick { sel: 0 },
+                KeyCode::Char('r') | KeyCode::Enter if n > 0 => again(&app.accounts[sel.min(n - 1)]),
                 KeyCode::Char('s') => {
                     app.request_sync();
                     app.flash("Syncing…");
@@ -207,14 +215,14 @@ pub fn key(app: &mut App, mut ui: AccountsUi, k: KeyEvent) -> Option<Dialog> {
                 Page::GoogleLater
             }
         }
-        Page::GoogleWaiting { url, cancel, rx, err } => {
+        Page::GoogleWaiting { url, cancel, rx, err, again } => {
             if esc {
                 cancel.store(true, Ordering::Relaxed);
-                Page::Pick { sel: 0 }
+                if again.is_some() { Page::List { sel: 0, confirm: false } } else { Page::Pick { sel: 0 } }
             } else if k.code == KeyCode::Enter && err.is_some() {
-                google_start()
+                google_start(again)
             } else {
-                Page::GoogleWaiting { url, cancel, rx, err }
+                Page::GoogleWaiting { url, cancel, rx, err, again }
             }
         }
         Page::Form(mut f) => match k.code {
@@ -241,8 +249,9 @@ pub fn key(app: &mut App, mut ui: AccountsUi, k: KeyEvent) -> Option<Dialog> {
                 Ok((url, user, pass, name)) => {
                     let (tx, rx) = channel();
                     let kind = f.kind;
+                    let again = f.again.clone();
                     std::thread::spawn(move || {
-                        let _ = tx.send(check(kind, url, user, pass, name));
+                        let _ = tx.send(check(kind, url, user, pass, name, again));
                     });
                     Page::Checking(f, rx)
                 }
@@ -267,19 +276,40 @@ pub fn key(app: &mut App, mut ui: AccountsUi, k: KeyEvent) -> Option<Dialog> {
 
 fn start(kind: Kind) -> Page {
     match kind {
-        Kind::Google => google_start(),
+        Kind::Google => google_start(None),
         k => Page::Form(Form::new(k)),
     }
 }
 
-/// Opens Google's sign-in page and waits for it on a thread.
-fn google_start() -> Page {
+/// Sign in again to an account (expired Google sign-in, changed password).
+fn again(a: &Account) -> Page {
+    match a.kind {
+        Kind::Google => google_start(Some(a.clone())),
+        k => {
+            let mut f = Form::new(k);
+            if k == Kind::CalDav {
+                f.inputs[0] = Input::new(&a.url);
+                f.inputs[1] = Input::new(&a.username);
+                f.sel = 2;
+            } else {
+                f.inputs[0] = Input::new(&a.username);
+                f.sel = 1;
+            }
+            f.again = Some(a.clone());
+            Page::Form(f)
+        }
+    }
+}
+
+/// Opens Google's sign-in page and waits for it on a thread. `again`: the
+/// account to sign in to again (the same Google account must be picked).
+fn google_start(again: Option<Account>) -> Page {
     let Some(app) = oauth::google_app() else { return Page::GoogleLater };
     let pending = match oauth::begin(&app) {
         Ok(p) => p,
         Err(e) => {
             let (_, rx) = channel();
-            return Page::GoogleWaiting { url: String::new(), cancel: Arc::default(), rx, err: Some(e) };
+            return Page::GoogleWaiting { url: String::new(), cancel: Arc::default(), rx, err: Some(e), again };
         }
     };
     let url = pending.url().to_string();
@@ -287,23 +317,30 @@ fn google_start() -> Page {
     let cancel: Arc<AtomicBool> = Arc::default();
     let (tx, rx) = channel();
     let stop = cancel.clone();
+    let old = again.clone();
     std::thread::spawn(move || {
         let result = pending.wait(oauth::LOGIN_TIMEOUT, &stop).and_then(|t| {
             let email = t.email.clone().unwrap_or_else(|| "Google".into());
-            let a = Account {
-                id: new_id(),
-                kind: Kind::Google,
-                name: email.clone(),
-                username: email.clone(),
-                addresses: t.email.into_iter().collect(),
-                ..Default::default()
+            let a = match old {
+                Some(o) if !o.username.eq_ignore_ascii_case(&email) => {
+                    return Err(format!("You signed in as {email}, but this account is {}. Pick that Google account.", o.username));
+                }
+                Some(o) => Account { error: None, ..o },
+                None => Account {
+                    id: new_id(),
+                    kind: Kind::Google,
+                    name: email.clone(),
+                    username: email.clone(),
+                    addresses: t.email.into_iter().collect(),
+                    ..Default::default()
+                },
             };
             accounts::set_secret(&a.id, &t.refresh)?;
             Ok(a)
         });
         let _ = tx.send(result);
     });
-    Page::GoogleWaiting { url, cancel, rx, err: None }
+    Page::GoogleWaiting { url, cancel, rx, err: None, again }
 }
 
 /// Called every tick: finishes a login check.
@@ -311,6 +348,13 @@ pub fn poll(app: &mut App, ui: &mut AccountsUi) {
     if let Page::GoogleWaiting { rx, err, .. } = &mut ui.page {
         let Ok(result) = rx.try_recv() else { return };
         match result {
+            Ok(a) if app.accounts.iter().any(|x| x.id == a.id) => {
+                let _ = app.store.update_account(&a);
+                ui.page = Page::List { sel: 0, confirm: false };
+                app.reload();
+                app.request_sync();
+                app.flash(format!("Signed in to {} again", a.name));
+            }
             Ok(a) => {
                 match app.store.add_account(&a) {
                     Ok(None) => {}
@@ -348,12 +392,19 @@ pub fn poll(app: &mut App, ui: &mut AccountsUi) {
     let Ok(result) = rx.try_recv() else { return };
     let Page::Checking(mut f, _) = std::mem::replace(&mut ui.page, Page::List { sel: 0, confirm: false }) else { return };
     match result {
+        Ok(a) if app.accounts.iter().any(|x| x.id == a.id) => {
+            // Signed in again: same account, new password.
+            let _ = app.store.update_account(&a);
+            app.reload();
+            app.request_sync();
+            app.flash(format!("Signed in to {} again", a.name));
+        }
         Ok(a) => {
             match app.store.add_account(&a) {
                 Ok(None) => {}
                 Ok(Some(existing)) => {
                     let _ = accounts::delete_secret(&a.id);
-                    f.err = Some(format!("{existing} is already added"));
+                    f.err = Some(format!("{existing} is already added. To change its password, pick it in Accounts and press r"));
                     ui.page = Page::Form(f);
                     return;
                 }
@@ -404,7 +455,7 @@ pub fn draw(f: &mut Frame, app: &App, ui: &AccountsUi) {
         }
         Page::List { sel, confirm } => {
             let h = (app.accounts.len() as u16 * 2 + 7).clamp(8, 24);
-            let r = frame(f, app, 70, h, "Accounts", "a add  x remove  s sync  esc close");
+            let r = frame(f, app, 70, h, "Accounts", "a add  r sign in again  x remove  s sync  esc");
             if app.accounts.is_empty() {
                 put(f.buffer_mut(), r.x, r.y, "No online accounts yet. Press a to add one.", r.width, muted);
             }

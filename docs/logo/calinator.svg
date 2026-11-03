@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <!-- Calinator: a calendar page drawn like a terminal window. -->
+  <rect x="0" y="0" width="120" height="120" rx="26" fill="#1e1e2e"/>
+  <!-- Binder rings -->
+  <rect x="34" y="17" width="8" height="18" rx="4" fill="#cdd6f4"/>
+  <rect x="78" y="17" width="8" height="18" rx="4" fill="#cdd6f4"/>
+  <!-- Page -->
+  <rect x="18" y="26" width="84" height="78" rx="12" fill="#313244" stroke="#89b4fa" stroke-width="4"/>
+  <!-- Title bar -->
+  <path d="M20 38 a10 10 0 0 1 10 -10 h60 a10 10 0 0 1 10 10 v8 h-80 z" fill="#89b4fa"/>
+  <!-- Day grid -->
+  <g fill="#585b70">
+    <rect x="30" y="56" width="12" height="10" rx="3"/>
+    <rect x="47" y="56" width="12" height="10" rx="3"/>
+    <rect x="64" y="56" width="12" height="10" rx="3"/>
+    <rect x="81" y="56" width="10" height="10" rx="3"/>
+    <rect x="30" y="72" width="12" height="10" rx="3"/>
+    <rect x="81" y="72" width="10" height="10" rx="3"/>
+  </g>
+  <!-- Today -->
+  <rect x="47" y="72" width="29" height="10" rx="3" fill="#fab387"/>
+  <!-- Terminal prompt -->
+  <path d="M31 88 l7 5 l-7 5" fill="none" stroke="#a6e3a1" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="43" y="95" width="14" height="4" rx="2" fill="#a6e3a1"/>
+</svg>
