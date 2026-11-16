@@ -1,6 +1,6 @@
 # Getting Calinator verified by Google
 
-Until Google verifies Calinator, only test users can sign in, they see an "unverified app" page, and they must sign in again every 7 days. Verification is free and takes about 3–5 business days. Calendar scopes are "sensitive", not "restricted": no security audit is needed.
+Until Google verifies Calinator, only test users can sign in, they see an "unverified app" page, and they must sign in again every 7 days. Verification is free and takes about 3–5 business days. `calendar.events` is "sensitive" (the console lists `calendar.calendarlist.readonly` as non-sensitive), not "restricted": no security audit is needed.
 
 Files here:
 - `privacy-policy.md`: the privacy policy page.
