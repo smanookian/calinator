@@ -1,39 +1,38 @@
-# Demo video script (about 3 minutes)
+# Demo video
 
-Google needs an unlisted YouTube video that shows the whole sign-in and how each scope is used. Record the full screen (Omarchy: `Super + Alt + Print`, or OBS). No voice needed; Google reads the screen. Use English in the app (it already is).
+Google needs an unlisted YouTube video that shows the sign-in with the permission screen, and how each permission is used. `record-demo.sh` records it: it types every key in Calinator and opens Google Calendar to show each change. You only sign in. No voice is needed.
 
-Before recording: use a test Google account with a few events, including one invitation from another address. Make the terminal font large enough to read.
+It uses a separate, empty data folder, shows only the "Calinator demo" calendar, and removes the account at the end. Your real calendar file is not touched.
 
-## 1. The app and its name (15 s)
-- Open a terminal, run `calinator`.
-- Show the week view for a moment.
+What the video shows, in order:
+1. Sign-in: the browser address with Calinator's client ID, the permission screen, Continue.
+2. `calendar.calendarlist.readonly`: the calendar list; hiding and showing a calendar.
+3. `calendar.events` (read): month, agenda, day and week views.
+4. `calendar.events` (write): an event is created, edited and deleted in Calinator; Google Calendar shows each change.
+5. An invitation is answered with "yes".
+6. The account is removed.
 
-## 2. Sign-in with the OAuth consent screen (45 s) — the most important part
-- Press `@`, then `a`, pick **Google**, press `enter`.
-- The browser opens Google's sign-in. **Before signing in, click the address bar** so the full URL is visible: it must show `client_id=104932519162-…apps.googleusercontent.com`. Hold it 3 seconds.
-- Pick the Google account.
-- On the consent screen, the app name **Calinator** and both calendar permissions are visible. Hold it 3 seconds, then click **Continue**.
-- Back in the terminal: "Added … Syncing your calendars…".
+## Before recording (once)
 
-## 3. calendar.calendarlist.readonly (20 s)
-- Left pane: the Google calendars appear with their names and colors.
-- Press `tab`, move to a calendar, press `space` to hide it and again to show it.
+1. **English:** set your Google account language to English at https://myaccount.google.com/language, and Chromium to English if it isn't.
+2. **Demo calendar:** at https://calendar.google.com create a calendar named exactly `Calinator demo`.
+3. **Only that calendar in the browser:** in Google Calendar's left sidebar, untick every calendar except `Calinator demo` (tick them again after recording).
+4. **An invitation:** from jclstefan@yahoo.de, invite stepan.manookian@gmail.com to an event for **tomorrow at 6pm** named `Demo invite`. Don't answer it.
+5. **Quiet screen:** close other windows and turn on Do Not Disturb, so no notifications appear.
+6. Be signed in to Google in Chromium.
 
-## 4. calendar.events: read (20 s)
-- Show the week view with Google events. Press `m` (month) and `g` (agenda), then `w` back.
-- Open an event with `enter`: title, time, guests.
+## Recording
 
-## 5. calendar.events: create, edit, delete — and it is in Google Calendar (60 s)
-- Press `a`, type `Demo meeting tomorrow 3pm`, press `enter`.
-- Switch to the browser, open Google Calendar: the event is there (reload if needed).
-- Back in Calinator: select it (`/`, type `demo`, `enter`), press `e`, change the title to `Demo meeting (moved)` and the time to 4pm, press `enter`. Show it changed in Google Calendar.
-- In Calinator press `x` to delete it. Show it is gone in Google Calendar.
+```bash
+cd ~/Projects/Calinator
+bash docs/google-verification/record-demo.sh
+```
 
-## 6. Invitations (20 s)
-- Press `i`: the invitation tray. Press `y` to answer yes.
-- In Google Calendar, open the invitation: your answer is "Yes".
+The recording starts, Calinator opens full screen, and after a few seconds the browser opens Google's sign-in. Then:
+1. **Click the browser's address bar** and wait 3 seconds (the reviewer must see `client_id=104932519162-…`).
+2. Pick your Google account.
+3. "Google hasn't verified this app": click **Advanced → Go to Calinator (unsafe)**.
+4. On the permission screen: wait 3 seconds, then click **Continue**.
+5. **Don't touch anything after that.** The script switches between Calinator and the browser by itself (about 2 minutes) and stops the recording.
 
-## 7. Removing access (10 s)
-- In Calinator press `@`, pick the account, press `x` twice: "Removed … (nothing was deleted on the server)".
-
-Upload to YouTube as **Unlisted**, and paste the link into the verification form.
+The video is saved in `~/Videos`. Upload it to YouTube as **Unlisted** and paste the link into the verification form.

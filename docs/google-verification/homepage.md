@@ -19,11 +19,11 @@
 
 Calinator runs on your computer. It has **no servers**: your calendar data goes only between your computer and your calendar service. Sign-ins and passwords are kept in your system keyring. No ads, no tracking.
 
-Read the [privacy policy](PRIVACY_POLICY_URL).
+Read the [privacy policy](https://stevinator.com/privacy/).
 
 ## How Calinator uses your Google account
 
-When you connect Google Calendar, Calinator asks to see and edit your calendar events and to see the list of your calendars. It uses this only to show your calendars in the app and to save the changes you make back to Google Calendar. Details are in the [privacy policy](PRIVACY_POLICY_URL).
+When you connect Google Calendar, Calinator asks to see and edit your calendar events and to see the list of your calendars. It uses this only to show your calendars in the app and to save the changes you make back to Google Calendar. Details are in the [privacy policy](https://stevinator.com/privacy/).
 
 ## Get it
 

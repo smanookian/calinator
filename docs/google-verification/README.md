@@ -13,16 +13,16 @@ Files here:
 
 1. **Website.** Put two pages on stevinator.com, for example:
    - `https://stevinator.com/calinator` from `homepage.md`
-   - `https://stevinator.com/calinator/privacy` from `privacy-policy.md`
+   - `https://stevinator.com/privacy/` from `privacy-policy.md`
 
-   Replace `PRIVACY_POLICY_URL` in `homepage.md` with the real address of the privacy page. Add a screenshot (`docs/screenshots/week-catppuccin.png`). The homepage must be public, not behind a login, and must name the app "Calinator" like the consent screen.
+   The privacy policy goes on https://stevinator.com/privacy/ (as a Calinator section, or the whole page). Add a screenshot (`docs/screenshots/week-catppuccin.png`). The homepage must be public, not behind a login, and must name the app "Calinator" like the consent screen.
 2. **Verify the domain.** At [Search Console](https://search.google.com/search-console), add `stevinator.com` with the **same Google account that owns the Cloud project**.
 3. **Branding** ([Google Auth Platform → Branding](https://console.cloud.google.com/auth/branding)):
    - App name: `Calinator`
    - User support email: your support email
    - App logo: `docs/logo/calinator-120.png`
    - App home page: `https://stevinator.com/calinator`
-   - Privacy policy: `https://stevinator.com/calinator/privacy`
+   - Privacy policy: `https://stevinator.com/privacy/`
    - Authorized domains: `stevinator.com`
    - Developer contact email: your email
 4. **Data access** ([Data access](https://console.cloud.google.com/auth/scopes)): the scopes must be exactly
