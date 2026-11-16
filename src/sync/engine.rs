@@ -42,7 +42,7 @@ fn db<T>(r: rusqlite::Result<T>) -> R<T> {
 /// Sync errors that end the whole run (vs. one object).
 fn fatal(e: Error) -> String {
     match e {
-        Error::Auth(_) => format!("{e}. Sign in again: @ then r"),
+        Error::Auth(_) => format!("{}. Sign in again: @ then r", e.to_string().trim_end_matches('.')),
         other => other.to_string(),
     }
 }
