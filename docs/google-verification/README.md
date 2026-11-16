@@ -29,7 +29,7 @@ Files here:
    - `.../auth/calendar.events`
    - `.../auth/calendar.calendarlist.readonly`
    - `openid`, `.../auth/userinfo.email`
-5. **Demo video.** Record it as in `demo-video.md`, upload to YouTube as **Unlisted**.
+5. **Demo video:** https://www.youtube.com/watch?v=NaRhWAYDN7E (unlisted, recorded Nov 16 2026).
 6. **Publish** ([Audience](https://console.cloud.google.com/auth/audience)): click **Publish app** (Testing → In production). Google then asks you to **prepare for verification**: paste the scope texts from `scopes.md` and the video link, and submit.
 7. **Wait** for Google's email. They may ask questions, usually about the video or the privacy policy; answer by email. Tell me what they ask and I'll help.
 
