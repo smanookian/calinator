@@ -37,7 +37,9 @@ place() { # float the window at the recorded area
 show() { hl "hl.dsp.focus({ window = 'address:$1' })"; hl "hl.dsp.window.bring_to_top({ window = 'address:$1' })"; sleep 1; }
 term() { show "$TERM_WIN"; }
 web() { show "$WEB_WIN"; }
-reload() { web; hl "hl.dsp.send_key_state({ mods = '', key = 'F5', state = 'down' })"; hl "hl.dsp.send_key_state({ mods = '', key = 'F5', state = 'up' })"; sleep 6; }
+# Show tomorrow in Google Calendar: a new tab in our browser window (the
+# window used last), so a stale tab (the sign-in reply page) is never shown.
+reload() { web; chromium "$DAY_URL" >/dev/null 2>&1 & sleep 8; }
 REC=""
 cleanup() {
   [ -n "$REC" ] && kill -INT "$REC" 2>/dev/null && wait "$REC" 2>/dev/null
@@ -84,17 +86,22 @@ if [ "${DRY:-}" != 1 ]; then
     [ "$(sqlite3 "$DB" 'SELECT COUNT(*) FROM accounts' 2>/dev/null)" = 1 ] && break
     sleep 1
   done
-  sleep 2
-  term
+  # Wait (still showing the browser) until the calendars have arrived, then
+  # hide all but the demo calendar before Calinator comes into view.
+  for _ in $(seq 60); do
+    [ "$(sqlite3 "$DB" "SELECT COUNT(*) FROM calendars WHERE json_extract(json,'\$.name') = '$CAL'" 2>/dev/null)" = 1 ] && break
+    sleep 1
+  done
   sleep 3
-  keys Escape
-  sleep 10
 fi
 
 # Show only the demo calendar (other calendars stay private).
 sqlite3 "$DB" "UPDATE calendars SET json = json_set(json, '\$.enabled', json(CASE WHEN json_extract(json,'\$.name') = '$CAL' THEN 'true' ELSE 'false' END))"
+keys Escape
 keys s
-sleep 6
+sleep 8
+term
+sleep 2
 
 say "2. Calendar list: show and hide the demo calendar."
 IDX=$(sqlite3 "$DB" "SELECT COUNT(*) FROM calendars WHERE rowid < (SELECT rowid FROM calendars WHERE json_extract(json,'\$.name') = '$CAL')")
