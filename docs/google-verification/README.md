@@ -15,7 +15,7 @@ Files here:
    - `https://stevinator.com/calinator` from `homepage.md`
    - `https://stevinator.com/calinator/privacy` from `privacy-policy.md`
 
-   Replace `SUPPORT_EMAIL` and `PRIVACY_POLICY_URL` in both. Add a screenshot (`docs/screenshots/week-catppuccin.png`). The homepage must be public, not behind a login, and must name the app "Calinator" like the consent screen.
+   Replace `info@stevinator.com` and `PRIVACY_POLICY_URL` in both. Add a screenshot (`docs/screenshots/week-catppuccin.png`). The homepage must be public, not behind a login, and must name the app "Calinator" like the consent screen.
 2. **Verify the domain.** At [Search Console](https://search.google.com/search-console), add `stevinator.com` with the **same Google account that owns the Cloud project**.
 3. **Branding** ([Google Auth Platform → Branding](https://console.cloud.google.com/auth/branding)):
    - App name: `Calinator`

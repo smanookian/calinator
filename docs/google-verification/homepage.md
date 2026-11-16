@@ -33,4 +33,4 @@ curl -fsSL https://raw.githubusercontent.com/smanookian/calinator/main/install.s
 
 Source code: https://github.com/smanookian/calinator · License: MIT
 
-Contact: SUPPORT_EMAIL
+Contact: info@stevinator.com

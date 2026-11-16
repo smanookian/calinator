@@ -51,4 +51,4 @@ If this policy changes, the new version will be on this page with a new date.
 
 ## Contact
 
-Questions: SUPPORT_EMAIL
+Questions: info@stevinator.com
