@@ -2,6 +2,7 @@
 
 A modern calendar for the terminal. Made for [Omarchy](https://omarchy.org), works on any Linux desktop.
 
+![Calinator: quick add, views and live themes](docs/screenshots/demo.gif)
 ![Week view, Catppuccin Mocha](docs/screenshots/week-catppuccin.png)
 ![Month view, Match Omarchy](docs/screenshots/month-omarchy.png)
 
