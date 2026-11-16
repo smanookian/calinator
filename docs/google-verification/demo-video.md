@@ -28,11 +28,11 @@ cd ~/Projects/Calinator
 bash docs/google-verification/record-demo.sh
 ```
 
-The recording starts, Calinator opens full screen, and after a few seconds the browser opens Google's sign-in. Then:
+Your screen switches to workspace 9. A Calinator window and a new browser window open there; only that area is recorded. After a few seconds the browser shows Google's sign-in. Then:
 1. **Click the browser's address bar** and wait 3 seconds (the reviewer must see `client_id=104932519162-…`).
 2. Pick your Google account.
 3. "Google hasn't verified this app": click **Advanced → Go to Calinator (unsafe)**.
 4. On the permission screen: wait 3 seconds, then click **Continue**.
 5. **Don't touch anything after that.** The script switches between Calinator and the browser by itself (about 2 minutes) and stops the recording.
 
-The video is saved in `~/Videos`. Upload it to YouTube as **Unlisted** and paste the link into the verification form.
+At the end you're back on workspace 2. The video is saved in `~/Videos` as `calinator-demo-….mp4`. Upload it to YouTube as **Unlisted** and paste the link into the verification form.
