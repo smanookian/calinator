@@ -161,7 +161,9 @@ fn label(app: &App, r: Row) -> (String, String) {
     let s = &app.settings;
     match r {
         Row::Theme => ("Theme".into(), app.theme.label.clone()),
-        Row::StartView => ("Start in".into(), format!("{} view", s.start_view)),
+        Row::StartView => {
+            ("Start in".into(), if s.start_view == "last" { "the view you left".into() } else { format!("{} view", s.start_view) })
+        }
         Row::WeekStart => ("Week starts on".into(), if s.week_starts_monday { "Monday".into() } else { "Sunday".into() }),
         Row::Clock => ("Clock".into(), if s.clock_24h { "24-hour".into() } else { "12-hour (am/pm)".into() }),
         Row::RowsPerHour => ("Rows per hour".into(), s.rows_per_hour.to_string()),
@@ -202,9 +204,9 @@ fn change(app: &mut App, ui: &mut SettingsUi, r: Row, d: i32) -> Option<Dialog> 
     match r {
         Row::Theme => return Some(Dialog::Themes(ThemePicker::new(app))),
         Row::StartView => {
-            let views = ["week", "day", "month", "agenda"];
+            let views = ["last", "week", "day", "month", "agenda"];
             let i = views.iter().position(|v| *v == s.start_view).unwrap_or(0) as i32;
-            s.start_view = views[(i + d).rem_euclid(4) as usize].into();
+            s.start_view = views[(i + d).rem_euclid(views.len() as i32) as usize].into();
         }
         Row::WeekStart => s.week_starts_monday = !s.week_starts_monday,
         Row::Clock => s.clock_24h = !s.clock_24h,

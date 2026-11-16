@@ -13,7 +13,8 @@ pub struct Settings {
     pub round_corners: bool,
     /// Soft shadow under dialogs.
     pub shadow: bool,
-    /// View on start: day, week, month, agenda.
+    /// View on start: last (the one open when Calinator closed), day, week,
+    /// month, agenda. It always opens on today.
     pub start_view: String,
     /// Week starts on Monday (else Sunday).
     pub week_starts_monday: bool,
@@ -55,7 +56,7 @@ impl Default for Settings {
             },
             round_corners: true,
             shadow: true,
-            start_view: "week".into(),
+            start_view: "last".into(),
             week_starts_monday: true,
             clock_24h: false,
             rows_per_hour: 2,

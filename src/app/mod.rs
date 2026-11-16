@@ -44,6 +44,24 @@ impl View {
             _ => View::Week,
         }
     }
+
+    pub fn id(self) -> &'static str {
+        match self {
+            View::Day => "day",
+            View::Week => "week",
+            View::Month => "month",
+            View::Agenda => "agenda",
+        }
+    }
+
+    /// The view to open with: the start setting, or with "last" the view
+    /// that was open when Calinator closed.
+    fn on_start(settings: &Settings, store: &Store) -> View {
+        match settings.start_view.as_str() {
+            "last" => View::from_id(&store.meta("last_view").ok().flatten().unwrap_or_default()),
+            s => View::from_id(s),
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -110,7 +128,7 @@ impl App {
             theme: theme::load(&settings.theme),
             watch: theme::OmarchyWatch::new(),
             zone,
-            view: View::from_id(&settings.start_view),
+            view: View::on_start(&settings, &store),
             focus: Focus::Main,
             day: today,
             agenda_from: today,
@@ -246,6 +264,7 @@ impl App {
 
     fn set_view(&mut self, v: View) {
         self.view = v;
+        let _ = self.store.set_meta("last_view", v.id());
         self.agenda_from = self.day;
         self.refresh();
         self.select_at_cursor();
@@ -748,6 +767,10 @@ pub fn run(store: Store, db: &Path, message: Option<String>) -> std::io::Result<
     let result = (|| {
         while !app.quit {
             if app.today() != last_day {
+                // Past midnight: someone looking at today keeps seeing today.
+                if app.day == last_day {
+                    app.go_to(app.today());
+                }
                 last_day = app.today();
                 app.refresh();
             }
