@@ -27,14 +27,28 @@ fn places(tx: &rusqlite::Transaction, uids: &BTreeSet<String>) -> Result<HashSet
     Ok(out)
 }
 
-/// `$XDG_DATA_HOME/calinator`, created on demand.
+/// `$XDG_DATA_HOME/calinator`, created on demand, readable only by the user.
 pub fn data_dir() -> PathBuf {
     let base = std::env::var_os("XDG_DATA_HOME")
         .map(PathBuf::from)
         .unwrap_or_else(|| PathBuf::from(std::env::var_os("HOME").unwrap_or_default()).join(".local/share"));
     let d = base.join("calinator");
     let _ = std::fs::create_dir_all(&d);
+    let _ = std::fs::set_permissions(&d, std::os::unix::fs::PermissionsExt::from_mode(0o700));
     d
+}
+
+/// Calendar data is personal: only the user may read the file (and its
+/// SQLite side files, which live next to it).
+fn private(path: &std::path::Path) {
+    use std::os::unix::fs::PermissionsExt;
+    let _ = std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600));
+    for ext in ["db-wal", "db-shm"] {
+        let side = path.with_extension(ext);
+        if side.exists() {
+            let _ = std::fs::set_permissions(side, std::fs::Permissions::from_mode(0o600));
+        }
+    }
 }
 
 const SCHEMA: &str = "
@@ -73,6 +87,7 @@ impl Store {
 
     pub fn open(path: &std::path::Path) -> Result<Self> {
         let db = Connection::open(path)?;
+        private(path);
         // The daemon and the app write at the same time.
         db.busy_timeout(std::time::Duration::from_secs(5))?;
         db.pragma_update(None, "journal_mode", "WAL")?;
