@@ -14,7 +14,7 @@ A modern calendar for the terminal. Made for [Omarchy](https://omarchy.org), wor
 - **Invites:** answer yes / maybe / no. Before guests get an email, Calinator asks you.
 - **Looks like your desktop:** many themes plus *Match Omarchy*, which follows your Omarchy theme live. Every theme passes a contrast test.
 - **Keyboard first,** mouse works too. Every key can be changed. Every setting is in the app.
-- **For scripts, bars and AI agents:** a CLI with JSON output and `calinator --bar`.
+- **For scripts and the Omarchy bar:** a CLI with JSON output and `calinator --bar`.
 - **.ics files and webcal links:** import a file, or subscribe to a link (refreshed every hour).
 
 - **Two-way sync** with Google, iCloud and any CalDAV server (Fastmail, Nextcloud, Radicale). Works offline; nothing is lost when both sides change.
@@ -68,7 +68,7 @@ Press `?` in the app for all keys. Change any key in Settings (`S`) → Keys.
 
 ## Command line
 
-Every command takes `--json` for scripts and agents.
+Every command takes `--json` for scripts.
 
 ```bash
 calinator agenda --days 3

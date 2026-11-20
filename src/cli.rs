@@ -1,4 +1,4 @@
-//! Headless commands for scripts, bars and AI agents. `--json` everywhere.
+//! Headless commands for scripts and the bar. `--json` everywhere.
 
 use std::path::Path;
 
