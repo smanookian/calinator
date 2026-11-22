@@ -31,6 +31,6 @@ Files here:
 6. **Publish** ([Audience](https://console.cloud.google.com/auth/audience)): click **Publish app** (Testing → In production). Google then asks you to **prepare for verification**: paste the scope texts from `scopes.md` and the video link, and submit.
 7. **Wait** for Google's email. They may ask questions, usually about the video or the privacy policy; answer by email. Tell me what they ask and I'll help.
 
-**Status:** branding verified and published; data access submitted for review on 2026-11-17 (answers go to info@stevinator.com).
+**Status:** approved by Google on 2026-11-22 (branding and data access verified, scope calendar.events). Questions on the way: the standard checklist (answered 2026-11-18) and AI use (answered 2026-11-20: Calinator uses no AI).
 
 After approval: no more warning page, no 100-user limit, no re-login every 7 days. Then we make the repository public.

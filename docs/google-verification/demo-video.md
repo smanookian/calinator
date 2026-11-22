@@ -17,7 +17,7 @@ What the video shows, in order:
 1. **English:** set your Google account language to English at https://myaccount.google.com/language, and Chromium to English if it isn't.
 2. **Demo calendar:** at https://calendar.google.com create a calendar named exactly `Calinator demo`.
 3. **Only that calendar in the browser:** in Google Calendar's left sidebar, untick every calendar except `Calinator demo` (tick them again after recording).
-4. **An invitation:** from jclstefan@yahoo.de, invite stepan.manookian@gmail.com to an event for **tomorrow at 6pm** named `Demo invite`. Don't answer it.
+4. **An invitation:** from a second account, invite the Google account you record with to an event for **tomorrow at 6pm** named `Demo invite`. Don't answer it.
 5. **Quiet screen:** close other windows and turn on Do Not Disturb, so no notifications appear.
 6. Be signed in to Google in Chromium.
 
