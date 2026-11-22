@@ -1,6 +1,6 @@
 # Maintainer: Stepan Manookian <info at stevinator dot com>
 pkgname=calinator-bin
-pkgver=0.1.0
+pkgver=0.1.1
 pkgrel=1
 pkgdesc="A modern terminal calendar with two-way sync"
 arch=('x86_64')
